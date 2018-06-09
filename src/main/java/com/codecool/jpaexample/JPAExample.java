@@ -1,6 +1,7 @@
 package com.codecool.jpaexample;
 
 import com.codecool.jpaexample.model.*;
+import jdk.nashorn.internal.runtime.regexp.joni.ast.CClassNode;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -8,8 +9,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 public class JPAExample {
 
@@ -17,14 +17,17 @@ public class JPAExample {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date birthDate1 = Calendar.getInstance().getTime();
         Date birthDate2 = Calendar.getInstance().getTime();
+        Date birthDate3 = Calendar.getInstance().getTime();
         try {
             birthDate1 = sdf.parse("1997-07-21");
             birthDate2 = sdf.parse("1993-12-01");
+            birthDate3 = sdf.parse("1990-10-05");
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        Klass classBp2 = new Klass("Budapest 2016-2");
+        Klass classBp2 = new Klass("Budapest 2016-2", CCLocation.BUDAPEST);
+        em.persist(classBp2);
         Address address = new Address("Hungary", "1234", "Budapest", "Macskakő út 5.");
         Student student = new Student("Ödön", "odon@tokodon.hu", birthDate1, address);
         classBp2.addStudent(student);
@@ -37,7 +40,7 @@ public class JPAExample {
         System.out.println("Ödön saved.");
 
         Address address2 = new Address("Hungary", "6789", "Budapest", "Harap u. 3.");
-        Student student2 = new Student("Aladár", "ktyfl@gmail.com", birthDate2, address);
+        Student student2 = new Student("Aladár", "ktyfl@gmail.com", birthDate2, address2);
         classBp2.addStudent(student2);
 
         transaction.begin();
@@ -45,6 +48,17 @@ public class JPAExample {
         em.persist(address2);
         transaction.commit();
         System.out.println("Aladár saved.");
+
+        List<String> phoneNumbers3 = new ArrayList<>(Arrays.asList("06301234567", "06307654321"));
+        Address address3 = new Address("Hungary", "2536", "Nyergesujfalu", "Petofi u. 10.");
+        Student student3 = new Student("Kecske", "kecske@gmail.com", birthDate3, address3, phoneNumbers3);
+        classBp2.addStudent(student3);
+
+        transaction.begin();
+        em.persist(student3);
+        em.persist(address3);
+        transaction.commit();
+        System.out.println("Kecske saved.");
     }
 
     public static void main(String[] args) {
